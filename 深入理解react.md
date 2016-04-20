@@ -58,7 +58,7 @@ React 众多优秀特征中的其中一部分就是，教会你去重新思考�
 
 在这步结束的时候，将会有一个可重用的组件库来渲染数据模型。这些组件将会仅有 `render()` 方法，因为这是应用的一个静态版本。位于树形结构顶部的组件（ `FilterableProductTable` ）将会使用数据模型作为 prop 。如果你改变底层数据模型，然后再次调用 `ReactDOM.render()` ， UI 将会更新。查看 UI 如何被更新和什么地方改变都是很容易的，因为 React 的单向数据流（也被称作“单向绑定”）保持了一切东西模块化，很容易查错，并且速度很快，没有什么复杂的。
 
-如果你在这步中需要帮助，请查看 [React 文档](https://facebook.github.io/react/docs/)。
+如果你在这步中需要帮助，请查看 [React 文档](快速开始.md)。
 
 ### 穿插一小段内容： props 与 state 比较
 在 React 中有两种类型的数据“模型”： props 和 state 。理解两者的区别是很重要的；如果你不太确定两者有什么区别，请大致浏览一下官方的 [React 文档](https://facebook.github.io/react/docs/interactivity-and-dynamic-uis.html)。

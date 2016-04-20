@@ -179,4 +179,4 @@ var content = (
 
 >**注意:**
 
->JSX 类似于 HTML，但不完全一样。参考 [JSX 陷阱](JSX陷阱.md) 了解主要不同。
+>JSX 类似于 HTML，但不完全一样。参考 [JSX 陷阱](JSX的陷阱.md) 了解主要不同。
