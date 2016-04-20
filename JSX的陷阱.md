@@ -30,7 +30,8 @@ HTML 实体可以插入到 JSX 的文本中。
 ```
 万不得已，可以直接使用原始 HTML。
 ```
-<div dangerouslySetInnerHTML={{__html: 'First &middot; Second'}} />
+//gitbook报错，不能正确解析双大括号{},所以中间加了一个 '-'
+<div dangerouslySetInnerHTML={-{__html: 'First &middot; Second'}-} />
 ```
 
 ## 自定义 HTML 属性
