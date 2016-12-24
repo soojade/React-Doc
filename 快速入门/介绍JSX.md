@@ -38,7 +38,7 @@ ReactDOM.render(
 );
 ```
 
-在[CodePen](http://codepen.io/gaearon/pen/PGEjdG?editors=0010)尝试。
+在[CodePen](http://codepen.io/gaearon/pen/PGEjdG?editors=0010)试试。
 
 为了可读性，我们拆分 JSX 为多行。虽然这不是强制的，当这样做时，我们还推荐把它包裹在括号中来避免 js 自动插入分号的陷阱。
 

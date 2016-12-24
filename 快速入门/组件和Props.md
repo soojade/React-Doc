@@ -102,7 +102,7 @@ ReactDOM.render(
 );
 ```
 
-在[CodePen](http://codepen.io/gaearon/pen/KgQKPr?editors=0010)上尝试。
+在[CodePen](http://codepen.io/gaearon/pen/KgQKPr?editors=0010)上试试。
 
 通常，新的 React 应用在顶层有一个单一的`App`组件。然而，如果你整合 React 到一个现有的应用中，你可能使用一个小的组件像`Button`自下而上的开始并且按你的方式逐步的到达整个视图结构的顶层。
 
