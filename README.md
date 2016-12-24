@@ -7,5 +7,5 @@
     * [Hello Wrold](快速入门/HelloWrold.md)
     * [介绍 JSX](快速入门/介绍JSX.md)
     * [渲染元素](快速入门/渲染元素.md)
-    * [组件和Props](快速入门/组件和Props.md)
-    * [状态和生命周期](快速入门/状态和生命周期.md)
+    * [组件和 Props](快速入门/组件和Props.md)
+    * [State 和生命周期](快速入门/State和生命周期.md)
