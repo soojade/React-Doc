@@ -1,6 +1,6 @@
 # State 和生命周期
 
-考虑前面章节中的时钟的例子。
+考虑前面章节中时钟的例子。
 
 到目前位置，我们仅学习了一种更新 UI 的方式。
 
@@ -53,7 +53,7 @@ setInterval(tick, 1000);
 
 然而，这遗漏了重要的一点：事实上，`Clock`设置一个计时器并每秒更新 UI 应该是`Clock`的实现细节。
 
-理想中，我们想如下这样写一次，然后`Clock`更新它自身：
+理想中，我们想要像下面这样写一次，然后`Clock`更新它自身：
 
 ```
 ReactDOM.render(
@@ -238,3 +238,223 @@ componentDidMount() {
 
 注意我们如何在`this`的右边保存计时器的 ID。
 
+虽然`this.props`是由 React 本身设置的，并且`this.state`有一个特殊的意义，如果你需要存储一些不被用来显示输出的东西，你可以自由的手动把字段添加到类。
+
+如果你不在`render()`中使用一些东西，就不应该使用 state。
+
+我们将会在`componentWillUnmount()`生命周期钩子中拆卸计时器：
+
+```
+componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+```
+
+最后，我们将实现`tick()`方法，它将每隔一秒运行一次。
+
+它会使用`this.setState()`来安排更新到组件的本地 state：
+
+```
+class Clock extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {date: new Date()};
+  }
+
+  componentDidMount() {
+    this.timerID = setInterval(
+      () => this.tick(),
+      1000
+    );
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  tick() {
+    this.setState({
+      date: new Date()
+    });
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>Hello, world!</h1>
+        <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(
+  <Clock />,
+  document.getElementById('root')
+);
+```
+
+在[CodePen](http://codepen.io/gaearon/pen/amqdNA?editors=0010)上试试。
+
+现在时钟每秒钟都会“嘀嗒”一次.
+
+让我们快速回顾发生了什么，以及方法被调用的顺序：
+
+1. 当`<Clock />`被传递到`ReactDOM.render()`时，React 调用`Clock`组件的构造函数。由于`Clock`需要显示当前的时间，我们使用一个包含当前时间的对象初始化`this.state`。我们稍后将更新这个 state。
+2. React 接着调用`Clock`组件的`render()`方法。在这里 React 知道了应该在屏幕上显示什么。React 接着更新 DOM 来匹配`Clock`的渲染输出。
+3. 当`Clock`输出被插入进 DOM 时，React 调用`componentDidMount()`生命周期钩子。在其内部，`Clock`组件要求浏览器设置一个计时器来一秒钟调用一次`tick()`。
+4. 每一秒浏览器调用一次`tick()`方法。在其内部，`Clock`组件通过调用一个使用包含当前时间的对象作为参数的`setState()`方法来安排 UI 的更新。由于`setState()`的调用，React 知道了 state 已经改变，并且再次调用`render()`方法获取应该在屏幕上显示的内容。这一次，`render()`方法中的`this.state.date`是不同的，所以渲染输出会包含更新的时间。React 相应的更新 DOM。
+5. 如果`Clock`组件永久的从 DOM 移除，React 调用`componentWillUnmount()`生命周期钩子，因此计时器停止了。
+
+## 正确的使用 State
+
+关于`setState()`有三件事你应该知道。
+
+### 不要直接修改 State
+
+例如，这将不会重新渲染一个组件：
+
+```
+// 错误
+this.state.comment = 'Hello';
+```
+
+相反，使用`setState()`:
+
+```
+// 改正后
+this.setState({comment: 'Hello'});
+```
+
+唯一可以给`this.state`赋值的地方是在构造函数中。
+
+### State 更新可能是异步的
+
+出于性能考虑，React 可能在一次更新中调用多次`setState()`。
+
+由于`this.props`和`this.state`的更新可能是异步的，你不应该依赖它们的值来计算下一个 state。
+
+例如，下面这段代码更新`counter`会失败：
+
+```
+// 错误
+this.setState({
+  counter: this.state.counter + this.props.increment,
+});
+```
+
+我们使用`setState()`的第二种形式：接收一个函数而不是对象，来修复它。这个函数会接收之前的 state 作为第一个参数，并且在当时应用于更新的 props 作为第二个参数：
+
+```
+// 改正后
+this.setState((prevState, props) => ({
+  counter: prevState.counter + props.increment
+}));
+```
+
+上面我们使用了*箭头函数*，使用普通的函数也是有效的:
+
+```
+this.setState(function(prevState, props) {
+  return {
+    counter: prevState.counter + props.increment
+  };
+});
+```
+
+### State 的更新是合并的
+
+当你调用`setState()`时，React 会合并你体哦那个的对象到当前的 state。
+
+例如，你的 state 可能包含几个独立的变量：
+
+```
+constructor(props) {
+    super(props);
+    this.state = {
+      posts: [],
+      comments: []
+    };
+  }
+```
+
+然后你可以分开调用`setState()`单独的更新它们。
+
+```
+componentDidMount() {
+    fetchPosts().then(response => {
+      this.setState({
+        posts: response.posts
+      });
+    });
+
+    fetchComments().then(response => {
+      this.setState({
+        comments: response.comments
+      });
+    });
+  }
+```
+
+因为是浅合并，所以`this.setState({comments})`并没有使`this.state.posts`发生变化，但`this.state.comments`完全被替换了。
+
+## 数据流向
+
+无论是父组件还是子组件，都不知道某个组件是有状态还是无状态，并且它们也不应该关心它被定义为一个函数还是一个类。
+
+这就是为什么 state 通常被局部调用或封装。除了拥有和设置它的组件之外的任何组件都不能访问它。
+
+一个组件可以选择将它自身的 state 作为 props 向下传递给它的子组件。
+
+```
+<h2>It is {this.state.date.toLocaleTimeString()}.</h2>
+```
+
+这也适用于用户自定义组件：
+
+```
+<FormattedDate date={this.state.date} />
+```
+
+`FormattedDate`组件会接收`date`作为它的 props，并且不会知道它是否来自`Clock`的 state、props，还是手动输入的。
+
+```
+function FormattedDate(props) {
+  return <h2>It is {props.date.toLocaleTimeString()}.</h2>;
+}
+```
+
+在[CodePen](http://codepen.io/gaearon/pen/zKRqNB?editors=0010)上试试。
+
+这通常被称为“自上而下”的或“单向”数据流。任何 state 始终隶属于一些特定的组件，并且任何来源于这个 state 的数据或 UI 只能影响到组件树“下面”的组件。
+
+如果你把组件树想象成一个由 props 构成的瀑布，每一个组件的 sate 就像额外的水源，会在任意的节点汇入这个瀑布并且随之向下流。
+
+为了展示所有的组件都是真正的独立的，我们可以创建一个`App`组件，渲染三个`<Clock>`：
+
+```
+function App() {
+  return (
+    <div>
+      <Clock />
+      <Clock />
+      <Clock />
+    </div>
+  );
+}
+
+ReactDOM.render(
+  <App />,
+  document.getElementById('root')
+);
+```
+
+在[CodePen](http://codepen.io/gaearon/pen/vXdGmd?editors=0010)上试试。
+
+每个`Clock`设置它自己的定时器，并独立更新。
+
+在 React 应用中，不管组件是有状态的还是无状态的，都被认为组件的实现细节可以随时间发生改变的。你可以在有状态的组件内使用无状态的组件，反之亦然。
+
+> 下一步
+>
+> [处理事件](./处理事件.md)
