@@ -193,7 +193,7 @@ ReactDOM.render(
 
 我们想要每当`Clock`被首次渲染到 DOM时设置一个计时器。这在 React 中称为“挂载”。
 
-我们也想每当通过`Clock`生成的 DOM 被移除时清除这个计时器。这在 React 总称为“卸载”。
+我们也想每当通过`Clock`生成的 DOM 被移除时清除这个计时器。这在 React 中称为“卸载”。
 
 当一个组件在挂载和卸载的时候，我们可以在组件类中声明特殊的方法来运行一些代码：
 
@@ -364,7 +364,7 @@ this.setState(function(prevState, props) {
 
 ### State 的更新是合并的
 
-当你调用`setState()`时，React 会合并你体哦那个的对象到当前的 state。
+当你调用`setState()`时，React 会合并你提供的对象到当前的 state。
 
 例如，你的 state 可能包含几个独立的变量：
 
